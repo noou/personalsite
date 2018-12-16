@@ -43,7 +43,7 @@ header, footer, article, section, nav, {
 
 img {
     display: block;
-    width: 50%;
+    width: 30%;
 }
 
 ::selection {
