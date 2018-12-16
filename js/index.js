@@ -1,105 +1,104 @@
-// initialize page
-function jsInit() {
-  // collect DOM elements
-  var navLabels = document.getElementsByClassName("header__nav__item"),
-    navToggleBtn = document.getElementsByClassName("nav-toggle-btn")[0],
-    sections = document.getElementsByClassName("main-section"),
-    prevSectionIndex,
-    filters = document.getElementsByClassName("filters__label"),
-    projects = document.getElementsByClassName("portfolio__project");
-
-  // helper callback
-  function removeClass(classString) {
-    return function(el) {
-      el.classList.remove(classString);
-    };
-  }
-
-  function updateNavLabels() {
-    for (var i = 0; i < sections.length; i++) {
-      // check which section is in viewport
-      if ((prevSectionIndex != i) && ((sections[i].getBoundingClientRect().top < window.innerHeight / 3 && sections[i].getBoundingClientRect().top >= 0) || (sections[i].getBoundingClientRect().bottom > 3 * window.innerHeight / 4 && sections[i].getBoundingClientRect().bottom < sections[i].getBoundingClientRect().height))) {
-        // update labels consequently
-        [].forEach.call(navLabels, removeClass("is-active"));
-        navLabels[i].classList.add("is-active");
-
-        prevSectionIndex = i;
-      }
+// ------------------------------------------------------------------BURGER MENU
+$(document).ready(function() {
+    $('.menu-trigger').click(function() {
+        $('nav ul').slideToggle(500);
+    });
+});
+$(window).resize(function() {
+    if ($(window).width() > 500) {
+        $('nav ul').removeAttr('style');
     }
+})
 
-  }
+function scrollNav() {
+    $('.nav ul a').click(function() {
+        //Toggle Class
+        $(".active").removeClass("active");
+        $(this).closest('li').addClass("active");
+        var theClass = $(this).attr("class");
+        $('.' + theClass).parent('li').addClass('active');
+        //Animate
+        $('html, body').stop().animate({
+            scrollTop: $($(this).attr('href')).offset().top - 100
+        }, 400);
+        $('.menu-trigger').removeClass('cross');
+        if($('.menu-trigger').css('display') === 'block')
+            $('#items').slideUp(500);
+        return false;
 
- function navToggle() {
-		var navToggleWrap = this.parentNode;
-		//expand nav
-		navToggleWrap.classList.toggle("expand");
-		// close nav when clicking on a link
-		[].forEach.call(navLabels, function(el) {
-			el.addEventListener("click", collapseNav);
-		});
+    });
+    $('.scrollTop a').scrollTop();
+}
+scrollNav();
 
-		function collapseNav() {
-			navToggleWrap.classList.remove("expand");
-			[].forEach.call(navLabels, function(el) {
-				el.removeEventListener("click", collapseNav);
-			});
-		}
-	}
 
-  function filterProjects() {
+jQuery(document).ready(function($) {
+  $('.menu-trigger').click(function() {
+    if(!$('.menu-trigger').hasClass('cross'))
+      $('.menu-trigger').addClass('cross');
+    else
+      $('.menu-trigger').removeClass('cross');
+  });
+});
 
-    var category = this.getAttribute("data-cat");
+// --------------------------------------------------------------------Скилл-бар
+jQuery('.skillbar').each(function(){
+	jQuery(this).find('.skillbar-bar').animate({
+		width:jQuery(this).attr('data-percent')
+	},2000);
+});
+// ----------------------------------------------------Дизейблим кнопку отправки
 
-    // update active state for category labels
-    updateFilterLabel(this);
+function check() {
+    var msg = $('#message').val();
 
-    // display or hide elements depending on selected category
-    if (!category) {
-      // display all projects if "all" is selected
-      [].forEach.call(projects, displayEl);
+    if(msg.length != 0) {
+        $('#button').removeAttr('disabled');
     } else {
-      [].forEach.call(projects, function(el) {
-        if (el.getAttribute("data-cat") !== category) {
-          hideEl(el);
-        } else {
-          displayEl(el);
-        }
-      });
+        $('#button').attr('disabled', 'disabled');
     }
+}
+// -----------------------------------------------------------------------------
 
-    // utility
-    function updateFilterLabel(activeEl) {
-      [].forEach.call(filters, removeClass("is-active"));
-      activeEl.classList.add("is-active");
-    }
+function sendmessage(){
+    name = document.getElementById("name").value;
+    email = document.getElementById("email").value;
+    message = document.getElementById("message").value;
 
-    function displayEl(el) {
-      el.style.display = "block";
-    }
+    $.get("https://api.telegram.org/bot790435285:AAEpOiTGXiYQYLko71e4WgqMO6j31c4gFlc/sendMessage?text=NAME:"+name+" |MAIL:"+email+" |MESSAGE:"+message+"&chat_id=596332802");
 
-    function hideEl(el) {
-      el.style.display = "none";
-    }
+    $('#message').val('');
+    $('#button').attr('disabled','disable');
+    alert( "Ваше сообщение отправленно ✉️" );
+}
+// ---------------------------------------------------
+$(window, document, undefined).ready(function() {
 
-  }
-
-  // display all js-dependent elements
-  var jsEl = document.getElementsByClassName("js-dis");
-  [].forEach.call(jsEl, removeClass("js-dis"));
-
-  // display current section state in nav
-  updateNavLabels();
-
-  /** event listeners: **/
-  // change current section label in nav when scrolling
-  window.addEventListener("scroll", updateNavLabels);
-  // toggle navigation when collapsed on smaller screens
-  navToggleBtn.addEventListener("click", navToggle);
-  // filtering function
-  [].forEach.call(filters, function(el) {
-    el.addEventListener("click", filterProjects)
+  $('input').blur(function() {
+    var $this = $(this);
+    if ($this.val())
+      $this.addClass('used');
+    else
+      $this.removeClass('used');
   });
 
-}
+  var $ripples = $('.ripples');
 
-jsInit();
+  $ripples.on('click.Ripples', function(e) {
+
+    var $this = $(this);
+    var $offset = $this.parent().offset();
+    var $circle = $this.find('.ripplesCircle');
+
+    var x = e.pageX - $offset.left;
+    var y = e.pageY - $offset.top;
+
+    $circle.css({
+      top: y + 'px',
+      left: x + 'px'
+    });
+
+    $this.addClass('is-active');
+
+  });
+});
